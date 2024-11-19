@@ -1,0 +1,5 @@
+# Add BOS SoC to Linux Kernel - Added by KahngJu (24/11/19)
+config BOS_DRIVER
+	bool "BOS SoC device drivers"
+	help
+	  This enables device drivers for BOS SoC
