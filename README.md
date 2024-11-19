@@ -1,1 +1,1 @@
-# Linux-Device-Driver-A1-SoC
+# Linux Device Driver-A1 SoC
