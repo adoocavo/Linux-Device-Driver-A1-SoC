@@ -1,0 +1,13 @@
+// Defining Board lv HW
+/dts-v1/;
+
+#include "A1.dtsi"
+
+/ {
+    compatible = "bos,A1";
+    model = "BOS Super SoC-A1"; 
+
+    
+};
+
+
