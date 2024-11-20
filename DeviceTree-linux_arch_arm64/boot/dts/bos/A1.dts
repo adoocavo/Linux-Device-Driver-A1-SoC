@@ -5,9 +5,37 @@
 
 / {
     compatible = "bos,A1";
-    model = "BOS Super SoC-A1"; 
-
+    model = "BOS Super SoC-A1";
     
+    #address-cells = <2>;
+    #size-cells = <2>;
+
+    chosen {
+        stdout-path = "serial0:115200n8";
+    };
+
+    aliases {
+        serial0 = &pl011;
+        i2c0 = &i2c;
+        spi0 = &spi;
+    };
 };
 
+&pl011 {
+    status = "okay";
+    current-speed = <115200>;
+};
 
+&i2c {
+    status = "okay";
+    clock-frequency = <100000>;
+};
+
+&spi {
+    status = "okay";
+    num-cs = <3>;
+};
+
+&gpio {
+    status = "okay";
+};

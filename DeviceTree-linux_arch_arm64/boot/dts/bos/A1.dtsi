@@ -17,9 +17,7 @@
 
     // clock node
     clock: apb-pclk {
-        // QEMU 에뮬레이션의 한계로 실제 clock 장치가 존재하지는 않음
-        //// 리눅스 내에서 각종 디바이스 초기화를 위해 Mock clock 디바이스를 명시
-
+        // 리눅스 내에서 각종 디바이스 초기화를 위해 Mock clock 디바이스를 명시
 	    clock-output-names = "clk24mhz";
 	    clock-frequency = <24000000>;
 	    compatible = "fixed-clock";
@@ -28,7 +26,6 @@
 
     // memory node : Defining system memory
     memory@80000000 {
-        
         // 메모리의 시작 주소 : 0x80000000
         // 메모리 크기 : 1GB
         reg = <0x00 0x80000000 0x00 0x4000000>;
@@ -73,9 +70,7 @@
 	};
     
     timer {
-        // CPU 타이머 명시
-
-        // Interrupt는 Secure, Non-secure, Virtual, Hypervisor 순으로 명시해야 함
+        // Interrupt는 Secure, Non-secure, Virtual, Hypervisor 순으로 명시
         //// Trustzone이나 가상화는 사용하지 않으므로, Non-secure만 명시
         //// Secure는 0으로 하고 나머지는 명시하지 않음
 	    interrupts = <GIC_PPI 0 IRQ_TYPE_LEVEL_HIGH>,
@@ -85,23 +80,22 @@
 	    compatible = "arm,armv8-timer", "arm,armv7-timer";
 	};
 
-
-    
     /* soc
     * Defined ranges:
     * A1-specific peripherals
     * ARM-local peripherals
     */
     soc {
-       
+        #size-cells = <2>;
+        #address-cells = <2>;
+
         // ARM GICv3 : GIC controller
         gicv3: intc@8000000 {
-            compatible = "arm,gic-v3";
-
-            // Reg에는 메모리 주소와 크기를 명시
             reg = <0x00 0x9000000 0x00 0x10000>,            // distributor
               <0x00 0x8000000 0x00 0x1000000>;              // redistributor
-            ranges;
+            ranges = <0x0 0x8000000 0x0 0x8000000 0x0 0x2000000>;
+
+            compatible = "arm,gic-v3";
             interrupt-controller;
 
             // 인터럽트를 명시 할때는 3개의 integer를 사용하도록 #interrupt-cells로 명시
@@ -116,8 +110,12 @@
 
         // ARM PL330 DMA controller 
         dma: pl330@9014000 {
+            #address-cells = <2>;
+            #size-cells = <2>;
+            reg = <0x00 0x9012000 0x00 0x1000>;     //  MMIO 주소 명시
+
             compatible = "arm,pl330", "arm,primecell";
-            clock-names = "apb_pclk"; // AMBA 장치이므로 클럭 필요
+            clock-names = "apb_pclk";               // AMBA 장치이므로 클럭 필요
             clocks = <&clock>;
             
             // DMA 컨트롤러에서 가지고 있는 인터럽트는 17개
@@ -138,15 +136,16 @@
                         <GIC_SPI 29 IRQ_TYPE_LEVEL_HIGH>,
                         <GIC_SPI 30 IRQ_TYPE_LEVEL_HIGH>,
                         <GIC_SPI 31 IRQ_TYPE_LEVEL_HIGH>;
-            reg = <0x00 0x9012000 0x00 0x1000>; // MMIO로 사용할 주소 명시
             
             // DMA 컨트롤러를 참조할 때 숫자는 1칸만 사용
             #dma-cells = <1>; // 여기서의 1칸은 integer 크기를 나타냄
         };
 
         // ARM PL011 UART controller
-        pl011@9010000 {
-            // UART 디바이스 정보 명시
+        pl011: pl011@9010000 {
+            #address-cells = <2>;
+            #size-cells = <2>;
+            reg = <0x00 0x9010000 0x00 0x1000>;         //  MMIO 주소 명시
             
             compatible = "arm,pl011", "arm,primecell";
             
@@ -156,39 +155,42 @@
             
             // UART 입력시 발생하는 인터럽트 명시
             interrupts = <GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>;
-            
-            // UART의 메모리 주소와 크기 명시
-            reg = <0x00 0x9010000 0x00 0x1000>;
-            
+                        
             dma-names = "tx";
             dmas = <&dma 3>;
         };
 
         // ARM PL181 MMC/SD card controller
         pl181@9013000 {
+            #address-cells = <2>;
+            #size-cells = <2>;
+            reg = <0x00 0x9013000 0x00 0x1000>;      // MMIO 주소 명시
+
             compatible = "arm,pl181", "arm,primecell";
             clock-names = "apb_pclk";
             clocks = <&clock>;
             
             // 여기에 명시된 장치를 사용하여
-            // MMC와 SD카드에 전원을 켜거나 끄므로 반드시 명시해야 함
+            // MMC와 SD카드에 전원을 켜거나 끔(전원 공급)
             vmmc-supply = <&regulator>;
             
             // 읽기와 쓰기 각각에 대해 인터럽트 사용
             interrupts = <GIC_SPI 2 IRQ_TYPE_LEVEL_HIGH>,
                          <GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>;
-            reg = <0x00 0x9013000 0x00 0x1000>;
         };
         
         // ARM PL061 GPIO controller
         gpio: pl061@9012000 {
+            #address-cells = <2>;
+            #size-cells = <2>;
+            reg = <0x00 0x9014000 0x00 0x1000>;     // MMIO 주소 명시
+
             // 지금 명시하는 장치가 GPIO chip임을 명시
             gpio-controller;
             compatible = "arm,pl061","arm,primecell";
             
-            // GPIO chip의 인터럽트와 MMIO 주소 명시
+            // GPIO chip의 인터럽트와 
             interrupts = <GIC_SPI 4 IRQ_TYPE_LEVEL_HIGH>;
-            reg = <0x00 0x9014000 0x00 0x1000>;
             
             // AMBA 장치이므로 클럭 필요
             clock-names = "apb_pclk";
@@ -202,11 +204,12 @@
         };
 
         // ARM PL022 SPI controller
-        spi@9015000 {
+        spi: spi@9015000 {
+            reg = <0x00 0x9015000 0x00 0x1000>;     // MMIO 주소 명시
+
             compatible = "arm,pl022", "arm,primecell";
-            // SPI 컨트롤러의 인터럽트와 MMIO 주소 명시
+            // SPI 컨트롤러의 인터럽트와
             interrupts = <GIC_SPI 5 IRQ_TYPE_LEVEL_HIGH>;
-            reg = <0x00 0x9015000 0x00 0x1000>;
             
             // AMBA 장치이므로 클럭 필요
             clock-names = "apb_pclk";
@@ -253,16 +256,16 @@
         };
 
         // ARM Versatile I2C controller
-        i2c@9016000 {
+        i2c: i2c@9016000 {
+            #address-cells = <2>;
+            #size-cells = <2>;
+            reg = <0x00 0x9016000 0x00 0x1000>;         // MMIO 주소 명시
+
             compatible = "arm,versatile-i2c";
-           
-            // I2C 컨트롤러의 인터럽트와 MMIO 주소 명시
-            reg = <0x00 0x9016000 0x00 0x1000>;
-           
+                      
             // 인터럽트는 사용하지 않으므로 명시하지 않음
             // SPI와는 달리 칩선택을 명시할 필요 없음
             // SPIDEV 처럼 I2C의 주변장치를 명시할 필요도 없음
-    
         };
 
         // PMIC HW IP(전원을 공급하는 장치인 PMIC 명시)
@@ -280,30 +283,6 @@
             regulator-min-microvolt = <3300000>;
             regulator-name = "3V3";
         };
-
-        /*
-        mmio@9011000 {
-            compatible = "A1,mmio", "arm,primecell";
-            clock-names = "apb_pclk";
-            
-            clocks = <&clock>;
-            
-            interrupts = <GIC_SPI 1 IRQ_TYPE_LEVEL_HIGH>;
-            
-            
-            reg = <0x00 0x9011000 0x00 0x1000>;
-                dma-names = "tx", "rx";
-                dmas =  <&dma 0x0>, <&dma 0x1>;
-                
-                led-gpios = <&gpio 0 GPIO_ACTIVE_HIGH>,
-                            <&gpio 1 GPIO_ACTIVE_HIGH>,
-                            <&gpio 2 GPIO_ACTIVE_HIGH>;
-                button-gpio = <&gpio 3 GPIO_ACTIVE_HIGH>;
-            
-        };
-        */
-
     };
-
 };
 
