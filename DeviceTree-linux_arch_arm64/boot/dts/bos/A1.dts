@@ -5,10 +5,12 @@
 
 / {
     compatible = "bos,A1";
-    model = "BOS Super SoC-A1";
+    // model = "BOS Super SoC-A1";
     
-    #address-cells = <2>;
-    #size-cells = <2>;
+    // node들의 주소 지정방식
+    //// =>  <address 상위 32비트, address 하위 32비트, size 상위 32비트, size 하위 32비트>
+    #address-cells = <2>;                 // 64비트 주소를 표현
+    #size-cells = <2>;                    // node가 mapping된 메모리 주소 공간의 크기 표현
 
     chosen {
         stdout-path = "serial0:115200n8";
