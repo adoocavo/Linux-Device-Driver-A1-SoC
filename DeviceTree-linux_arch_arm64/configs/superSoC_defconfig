@@ -82,36 +82,33 @@ CONFIG_ARCH_BOS=y
 CONFIG_BOS_DRIVER=y
 
 # Add to use Initramfs - Added by KahngJu(24/11/18)
-CONFIG_BLK_DEV_INITRD=y 
-CONFIG_RD_GZIP=y
+CONFIG_BLK_DEV_INITRD=y                 # 초기 RAM 디스크(initrd), 초기 RAM 파일시스템(initramfs) 지원을 활성화(커널이 부팅 시 임시 루트 파일시스템을 메모리에 로드 가능)
+CONFIG_RD_GZIP=y                        # GZIP으로 압축된 initramfs 이미지를 지원
 
 # Add GPIO controller to kernel - Added by KahngJu(24/11/18)
-CONFIG_GPIO_PL061=y
-CONFIG_GPIOLIB=y
-CONFIG_GPIO_SYSFS=y
+CONFIG_GPIO_PL061=y                     # PrimeCell PL061 GPIO 컨트롤러 지원을 활성화
+CONFIG_GPIOLIB=y                        # GPIO 지원 라이브러리를 활성화(GPIO 핀을 제어하기 위한 공통 인터페이스 활성화)
+CONFIG_GPIO_SYSFS=y                     # sysfs를 통한 GPIO 제어를 활성화(유저 공간에서 GPIO를 제어) 
 
 # Add DMA controller to kernel - Added by KahngJu(24/11/18)
-CONFIG_DMADEVICES=y
-CONFIG_DMA_ENGINE=y
-CONFIG_PL330_DMA=y
+CONFIG_DMADEVICES=y                     # DMA 장치 지원을 활성화
+CONFIG_DMA_ENGINE=y                     # DMA 엔진(DMA 작업을 관리하기 위한 프레임워크) 지원을 활성화
+CONFIG_PL330_DMA=y                      # PL330 DMA 컨트롤러 지원을 활성화
 
 # Add voltage regulator to kernel - Added by KahngJu(24/11/18)
-CONFIG_REGULATOR=y 
-CONFIG_REGULATOR_FIXED_VOLTAGE=y
+CONFIG_REGULATOR=y                      # 전압 및 전류 조정기 지원을 활성화
+CONFIG_REGULATOR_FIXED_VOLTAGE=y        # 고정 전압 조정기 지원을 활성화
 
 # Add SPI to kernel - Added by KahngJu(24/11/18)
-CONFIG_SPI=y
-CONFIG_SPI_PL022=y
-## SPI 툴을 사용하기 위해 필요한 설정 : SPI 툴을 사용하기 위해서는 spidev를 사용해야 함
-CONFIG_SPI_SPIDEV=y
+CONFIG_SPI=y                            # SPI 버스 지원 활성화
+CONFIG_SPI_PL022=y                      # ARM AMBA PL022 SSP 컨트롤러 지원을 활성화
+CONFIG_SPI_SPIDEV=y                     ## SPI 툴을 사용하기 위해 필요한 설정 : SPI 툴을 사용하기 위해서는 spidev를 사용해야 함
 
 # Add I2C to kernel - Added by KahngJu(24/11/18)
-CONFIG_I2C=y
-CONFIG_I2C_VERSATILE=y
-## I2C 툴을 사용하기 위해 필요한 설정 : CHARDEV를 추가하지 않으면 /dev에 I2C 컨트롤러 디바이스 노드가 없음
-CONFIG_I2C_CHARDEV=y
+CONFIG_I2C=y                           # I2C 버스 지원 활성화
+CONFIG_I2C_VERSATILE=y                 # Versatile I2C 어댑터 지원을 활성화
+CONFIG_I2C_CHARDEV=y                   ## I2C 툴을 사용하기 위해 필요한 설정 : CHARDEV를 추가하지 않으면 /dev에 I2C 컨트롤러 디바이스 노드가 없음
 
-#
-CONFIG_GPIOLIB_IRQCHIP=y
-CONFIG_MMC=y
-CONFIG_I2C_ALGOBIT=y
+CONFIG_GPIOLIB_IRQCHIP=y            # GPIO 핀을 인터럽트 소스로 사용할 수 있게 설정
+CONFIG_MMC=y                        # MMC/SD/SDIO 카드 지원을 활성화
+CONFIG_I2C_ALGOBIT=y                
